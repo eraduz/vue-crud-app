@@ -10,22 +10,44 @@
       </tr>
     </thead>
     <tbody>
-        <!-- while -->
-      <tr>
-        <th scope="row">id</th>
-        <td class="foo">name</td>
-        <td class="foo">email</td>
-        <td class="foo">message</td>
+      <tr class="container" v-for="item in messages" :key="item.id">
+        <th scope="row">{{ item.id }}</th>
+        <td class="foo">{{ item.name }}</td>
+        <td class="foo">{{ item.email }}</td>
+        <td class="foo">{{ item.message }}</td>
         <td class="foo">
-          <a href="delete.php?del=<?= $row['id'] ?>">
-            <i class="fas fa-trash-alt text-danger"></i>
-          </a>&nbsp;&nbsp;
-          <a href="edit.php?id=<?= $row['id'] ?>">
-            <i class="fas fa-edit text-primary"></i>
-          </a>
+          <a href="delete.php?del=<?= $row['id'] ?>">❌</a>&nbsp;&nbsp;
+          <a href="edit.php?id=<?= $row['id'] ?>">🔩</a>
         </td>
       </tr>
-    <!-- while  -->
     </tbody>
   </table>
 </template>
+<script>
+import db from '../components/firebaseInit'
+
+export default {
+  data () {
+    return {
+      messages: [],
+      loading: true
+    }
+  },
+  mounted () {
+    db.collection('messages')
+      .get()
+      .then(querySnapshot => {
+        this.loading = false
+        querySnapshot.forEach(doc => {
+          const data = {
+            id: doc.data().id,
+            name: doc.data().name,
+            email: doc.data().email,
+            message: doc.data().message
+          }
+          this.messages.push(data)
+        })
+      })
+  }
+}
+</script>
